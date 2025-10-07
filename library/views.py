@@ -1,4 +1,5 @@
 from datetime import timedelta
+from django.db.models import Count, Q
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from .models import Author, Book, Member, Loan
@@ -65,7 +66,7 @@ class MemberViewSet(viewsets.ModelViewSet):
                 "id": m["id"],
                 "username": m["user__username"],
                 "email": m["user__email"],
-                "active_loans",
+                "active_loans": m["active_loans"],
             }
             for m in top_members
         ]
@@ -102,7 +103,7 @@ class LoanViewSet(viewsets.ModelViewSet):
             additional_days = int(additional_days)
             if additional_days <= 0:
                 return Response(
-                    {"error": "additional_days must be a positive ingteger"},
+                    {"error": "additional_days must be a positive integer"},
                     status = status.HTTP_400_BAD_REQUEST
                 )
         except (ValueError, TypeError):
