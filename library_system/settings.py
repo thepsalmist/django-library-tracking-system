@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from celery.schedules import crontab
 
 load_dotenv()
 
@@ -25,7 +26,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     # Local apps
-    'library', 
+    'library',
 ]
 
 MIDDLEWARE = [
@@ -112,6 +113,12 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
+CELERY_BEAT_SCHEDULE = {
+    "check_overdue_loans": {
+        "task": "library.tasks.check_overdue_loans",
+        "schedule": crontab(hour=7, minute=0), #Schedule run daily at 7:00 A.M
+    }
+}
 # Email Configuration
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # For development
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'admin@library.com')
